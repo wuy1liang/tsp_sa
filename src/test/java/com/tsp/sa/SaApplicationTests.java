@@ -33,14 +33,22 @@ public class SaApplicationTests {
 
     @Test
     public void t1(){
-        String url = "https://restapi.amap.com/v3/direction/transit/integrated";
+        String url = "https://restapi.amap.com/v3/direction/transit/integrated?";
+        url += "key=a52b22a186c5a4d2b3fb0ff0cbc26ae4&";
+        url += "origin=116.481499,39.990475&";
+        url += "destination=116.465063,39.999538&";
+        url += "city=010&";
+        url += "extensions=base&";
+
         Map<String,Object> params = new HashMap<>();
         params.put("key","a52b22a186c5a4d2b3fb0ff0cbc26ae4");
         params.put("origin","116.481499,39.990475");
         params.put("destination","116.465063,39.999538");
         params.put("city","010");
         params.put("extensions","base");
-        params.put("sig",getGaodeSign(params,"824d4a179ba5c4bf30ecea829ad82122"));
+        url += "key="+getGaodeSign(params,"824d4a179ba5c4bf30ecea829ad82122");
+
+        System.out.println(url);
         String rest = HttpUtil.rest(params, url, HttpMethod.GET);
         System.out.println(rest);
     }
@@ -64,7 +72,9 @@ public class SaApplicationTests {
         }
         String param = sb.substring(0, sb.length() - 1);
         param = param + privateKey;
+        System.out.println(param);
         String sign = getMD5(param);
+        System.out.println(sign);
         return sign;
     }
 
