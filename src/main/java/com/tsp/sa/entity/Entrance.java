@@ -7,4 +7,14 @@ import lombok.Data;
  */
 @Data
 public class Entrance {
+
+    /**
+     * 入口名称
+     */
+    private String name;
+
+    /**
+     * 入口经纬度
+     */
+    private String location;
 }
