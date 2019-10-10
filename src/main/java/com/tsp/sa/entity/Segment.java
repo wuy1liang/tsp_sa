@@ -31,7 +31,7 @@ public class Segment {
     private Exit exit;
 
     /**
-     * 乘坐地铁的信息(只在地铁路段有值)
+     * 乘坐火车的信息(只在地铁路段有值)
      */
     private Railway railway;
 }
