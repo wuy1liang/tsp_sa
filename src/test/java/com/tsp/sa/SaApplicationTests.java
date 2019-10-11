@@ -2,6 +2,7 @@ package com.tsp.sa;
 
 import com.tsp.sa.service.SaService;
 import com.tsp.sa.utils.HttpUtil;
+import com.tsp.sa.utils.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class SaApplicationTests {
 
         System.out.println(url);
         String rest = HttpUtil.rest(params, url, HttpMethod.GET);
-        System.out.println(rest);
+        System.out.println(JsonUtil.json2Data(rest));
     }
 
     public String getGaodeSign(Map<String,Object> paramMap,String privateKey) {
