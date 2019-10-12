@@ -74,8 +74,10 @@ public class JsonUtil {
 
         Segment segment = new Segment();
 
-        Walking walking = json2Walking(jsonObject.getJSONObject("walking"));
-        segment.setWalking(walking);
+        if (jsonObject.get("walking") instanceof JSONObject ){
+            Walking walking = json2Walking(jsonObject.getJSONObject("walking"));
+            segment.setWalking(walking);
+        }
 
         JSONObject busJson = jsonObject.getJSONObject("bus");
         List<Busline> buslineList = new ArrayList<>();
@@ -88,14 +90,20 @@ public class JsonUtil {
         }
         segment.setBuslines(buslineList);
 
-        Entrance entrance = json2Entrance(jsonObject.getJSONObject("entrance"));
-        segment.setEntrance(entrance);
+        if (jsonObject.get("entrance")instanceof JSONObject ){
+            Entrance entrance = json2Entrance(jsonObject.getJSONObject("entrance"));
+            segment.setEntrance(entrance);
+        }
 
-        Exit exit = json2Exit(jsonObject.getJSONObject("exit"));
-        segment.setExit(exit);
+        if (jsonObject.get("exit")instanceof JSONObject ){
+            Exit exit = json2Exit(jsonObject.getJSONObject("exit"));
+            segment.setExit(exit);
+        }
 
-        Railway railway = json2Railway(jsonObject.getJSONObject("railway"));
-        segment.setRailway(railway);
+        if (jsonObject.get("railway")instanceof JSONObject ){
+            Railway railway = json2Railway(jsonObject.getJSONObject("railway"));
+            segment.setRailway(railway);
+        }
 
         return segment;
     }
@@ -122,11 +130,15 @@ public class JsonUtil {
     public static Busline json2Busline(JSONObject jsonObject) {
         Busline busline =new Busline();
 
-        Station departure_stop = json2Station(jsonObject.getJSONObject("departure_stop"));
-        busline.setDeparture_stop(departure_stop);
+        if (jsonObject.get("departure_stop")instanceof JSONObject ){
+            Station departure_stop = json2Station(jsonObject.getJSONObject("departure_stop"));
+            busline.setDeparture_stop(departure_stop);
+        }
 
-        Station arrival_stop = json2Station(jsonObject.getJSONObject("arrival_stop"));
-        busline.setArrival_stop(arrival_stop);
+        if (jsonObject.get("arrival_stop")instanceof JSONObject ){
+            Station arrival_stop = json2Station(jsonObject.getJSONObject("arrival_stop"));
+            busline.setArrival_stop(arrival_stop);
+        }
 
         busline.setName(jsonObject.getString("arrival_stop"));
         busline.setId(jsonObject.getString("id"));
