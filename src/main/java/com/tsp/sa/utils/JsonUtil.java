@@ -88,15 +88,105 @@ public class JsonUtil {
         }
         segment.setBuslines(buslineList);
 
+        Entrance entrance = json2Entrance(jsonObject.getJSONObject("entrance"));
+        segment.setEntrance(entrance);
+
+        Exit exit = json2Exit(jsonObject.getJSONObject("exit"));
+        segment.setExit(exit);
+
+        Railway railway = json2Railway(jsonObject.getJSONObject("railway"));
+        segment.setRailway(railway);
 
         return segment;
     }
 
-    private static Busline json2Busline(JSONObject jsonObject) {
-        return null;
+    public static Railway json2Railway(JSONObject jsonObject) {
+        Railway railway = new Railway();
+        return railway;
     }
 
-    private static Walking json2Walking(JSONObject walking) {
-        return null;
+    public static Exit json2Exit(JSONObject jsonObject) {
+        Exit exit = new Exit();
+        exit.setLocation(jsonObject.getString("location"));
+        exit.setName(jsonObject.getString("name"));
+        return exit;
+    }
+
+    public static Entrance json2Entrance(JSONObject jsonObject) {
+        Entrance entrance = new Entrance();
+        entrance.setLocation(jsonObject.getString("location"));
+        entrance.setName(jsonObject.getString("name"));
+        return entrance;
+    }
+
+    public static Busline json2Busline(JSONObject jsonObject) {
+        Busline busline =new Busline();
+
+        Station departure_stop = json2Station(jsonObject.getJSONObject("departure_stop"));
+        busline.setDeparture_stop(departure_stop);
+
+        Station arrival_stop = json2Station(jsonObject.getJSONObject("arrival_stop"));
+        busline.setArrival_stop(arrival_stop);
+
+        busline.setName(jsonObject.getString("arrival_stop"));
+        busline.setId(jsonObject.getString("id"));
+        busline.setType(jsonObject.getString("type"));
+        busline.setDistance(jsonObject.getString("distance"));
+        busline.setDuration(jsonObject.getString("duration"));
+        busline.setPolyline(jsonObject.getString("polyline"));
+        busline.setStart_time(jsonObject.getString("start_time"));
+        busline.setEnd_time(jsonObject.getString("start_time"));
+        busline.setVia_num(jsonObject.getString("via_num"));
+
+        JSONArray via_stops = jsonObject.getJSONArray("via_stops");
+        List<Station> viaStops = new ArrayList<>();
+        for (int i = 0;i < via_stops.size();i++){
+            Station station = json2Station(via_stops.getJSONObject(i));
+            viaStops.add(station);
+        }
+        busline.setVia_stops(viaStops);
+
+        return busline;
+    }
+
+    private static Station json2Station(JSONObject jsonObject) {
+        Station station = new Station();
+        station.setId(jsonObject.getString("id"));
+        station.setName(jsonObject.getString("name"));
+        station.setLocation(jsonObject.getString("location"));
+        return station;
+    }
+
+    public static Walking json2Walking(JSONObject jsonObject) {
+        Walking walking = new Walking();
+
+        walking.setOrigin(jsonObject.getString("origin"));
+        walking.setDestination(jsonObject.getString("destination"));
+        walking.setDistance(jsonObject.getString("distance"));
+        walking.setDuration(jsonObject.getString("duration"));
+
+        JSONArray stepArray = jsonObject.getJSONArray("steps");
+        List<Step> steps = new ArrayList<>();
+        for (int i = 0;i < stepArray.size();i++){
+            Step step = json2Step(stepArray.getJSONObject(i));
+            steps.add(step);
+        }
+        walking.setSteps(steps);
+
+        return walking;
+    }
+
+    public static Step json2Step(JSONObject jsonObject) {
+        Step step = new Step();
+
+        step.setAction(jsonObject.getString("action"));
+        step.setAssistant_action(jsonObject.getString("assistant_action"));
+        step.setPolyline(jsonObject.getString("polyline"));
+        step.setDuration(jsonObject.getString("duration"));
+        step.setDistance(jsonObject.getString("distance"));
+        step.setRoad(jsonObject.getString("road"));
+        step.setInstruction(jsonObject.getString("instruction"));
+
+        return step;
     }
 }
