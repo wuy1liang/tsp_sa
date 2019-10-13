@@ -6,7 +6,7 @@ import lombok.Data;
  *  高德公交路径规划数据
  */
 @Data
-public class GaodeTransitDirectionData {
+public class GaodeTransitDirectionResponseData {
 
     /**
      * 返回状态

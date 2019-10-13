@@ -95,5 +95,34 @@ public class SaService {
         return  result;
     }
 
+    private void init(String origin, List<String> destinations, String strategy){
+
+        /**
+         *  cityList 初始化
+         */
+        cityList.clear();
+        City start = new City(0,origin);
+        cityList.add(start);
+        for (int i = 0;i < destinations.size();i++){
+            City destination = new City(i+1,destinations.get(i));
+            cityList.add(destination);
+        }
+        City end = new City(cityList.size(),origin);
+        cityList.add(end);
+
+        /**
+         *  distance 初始化
+         */
+        distance = new double[cityList.size()-1][cityList.size()-1];
+        for (int i = 0;i < cityList.size()-1; i++){
+            for (int j = 0;j < cityList.size()-1; j++){
+                if (i != j){
+                    
+                }else {
+                    distance[i][j] = 0;
+                }
+            }
+        }
+    }
 
 }

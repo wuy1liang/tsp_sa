@@ -10,11 +10,11 @@ import java.util.List;
 
 public class JsonUtil {
 
-    public static GaodeTransitDirectionData json2Data(String json){
+    public static GaodeTransitDirectionResponseData json2Data(String json){
 
         JSONObject object = JSON.parseObject(json);
 
-        GaodeTransitDirectionData data = new GaodeTransitDirectionData();
+        GaodeTransitDirectionResponseData data = new GaodeTransitDirectionResponseData();
 
         data.setStatus(object.getString("status"));
         data.setInfo(object.getString("info"));

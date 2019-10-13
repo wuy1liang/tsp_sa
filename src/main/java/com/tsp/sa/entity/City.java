@@ -11,10 +11,17 @@ public class City {
 
     private Double wd;
 
+    private String location;
+
     public City(Integer id, Double jd, Double wd) {
         this.id = id;
         this.jd = jd;
         this.wd = wd;
+    }
+
+    public City(Integer id, String location) {
+        this.id = id;
+        this.location = location;
     }
 
     @Override
