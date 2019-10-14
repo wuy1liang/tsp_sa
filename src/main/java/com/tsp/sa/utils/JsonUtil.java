@@ -10,7 +10,7 @@ import java.util.List;
 
 public class JsonUtil {
 
-    public static GaodeTransitDirectionResponseData json2Data(String json){
+    public static GaodeTransitDirectionResponseData json2TransitDirectionData(String json){
 
         JSONObject object = JSON.parseObject(json);
 
@@ -28,7 +28,7 @@ public class JsonUtil {
         return data;
     }
 
-    public static Route json2Route(JSONObject routeJson) {
+    private static Route json2Route(JSONObject routeJson) {
         Route route = new Route();
 
         route.setOrigin(routeJson.getString("origin"));
@@ -49,11 +49,11 @@ public class JsonUtil {
         return route;
     }
 
-    public static Transit json2Transit(JSONObject jsonObject) {
+    private static Transit json2Transit(JSONObject jsonObject) {
         Transit transit = new Transit();
 
         transit.setCost(jsonObject.getString("cost"));
-        transit.setDistance(jsonObject.getString("duration"));
+        transit.setDuration(jsonObject.getString("duration"));
         transit.setNightflag(jsonObject.getString("nightflag"));
         transit.setWalking_distance(jsonObject.getString("walking_distance"));
 
@@ -70,7 +70,7 @@ public class JsonUtil {
         return transit;
     }
 
-    public static Segment json2Segment(JSONObject jsonObject) {
+    private static Segment json2Segment(JSONObject jsonObject) {
 
         Segment segment = new Segment();
 
@@ -108,26 +108,26 @@ public class JsonUtil {
         return segment;
     }
 
-    public static Railway json2Railway(JSONObject jsonObject) {
+    private static Railway json2Railway(JSONObject jsonObject) {
         Railway railway = new Railway();
         return railway;
     }
 
-    public static Exit json2Exit(JSONObject jsonObject) {
+    private static Exit json2Exit(JSONObject jsonObject) {
         Exit exit = new Exit();
         exit.setLocation(jsonObject.getString("location"));
         exit.setName(jsonObject.getString("name"));
         return exit;
     }
 
-    public static Entrance json2Entrance(JSONObject jsonObject) {
+    private static Entrance json2Entrance(JSONObject jsonObject) {
         Entrance entrance = new Entrance();
         entrance.setLocation(jsonObject.getString("location"));
         entrance.setName(jsonObject.getString("name"));
         return entrance;
     }
 
-    public static Busline json2Busline(JSONObject jsonObject) {
+    private static Busline json2Busline(JSONObject jsonObject) {
         Busline busline =new Busline();
 
         if (jsonObject.get("departure_stop")instanceof JSONObject ){
@@ -169,7 +169,7 @@ public class JsonUtil {
         return station;
     }
 
-    public static Walking json2Walking(JSONObject jsonObject) {
+    private static Walking json2Walking(JSONObject jsonObject) {
         Walking walking = new Walking();
 
         walking.setOrigin(jsonObject.getString("origin"));
@@ -188,7 +188,7 @@ public class JsonUtil {
         return walking;
     }
 
-    public static Step json2Step(JSONObject jsonObject) {
+    private static Step json2Step(JSONObject jsonObject) {
         Step step = new Step();
 
         step.setAction(jsonObject.getString("action"));
@@ -200,5 +200,38 @@ public class JsonUtil {
         step.setInstruction(jsonObject.getString("instruction"));
 
         return step;
+    }
+
+    public static GeocodeRegeoResponseData json2RegeoData(String json) {
+        JSONObject object = JSON.parseObject(json);
+
+        GeocodeRegeoResponseData data = new GeocodeRegeoResponseData();
+
+        data.setStatus(object.getString("status"));
+        data.setInfo(object.getString("info"));
+        data.setInfocode(object.getString("infocode"));
+
+        JSONArray regeocodeArray = object.getJSONArray("regeocodes");
+        List<Regeocode> regeocodes = new ArrayList<>();
+        for (int i = 0;i < regeocodeArray.size(); i++){
+            Regeocode regeocode = json2Regeocode(regeocodeArray.getJSONObject(i));
+            regeocodes.add(regeocode);
+        }
+        data.setRegeocodes(regeocodes);
+
+        return data;
+    }
+
+    private static Regeocode json2Regeocode(JSONObject jsonObject) {
+        Regeocode regeocode = new Regeocode();
+
+        regeocode.setFormatted_address(jsonObject.getString("formatted_address"));
+
+        JSONObject addressComponent = jsonObject.getJSONObject("addressComponent");
+        if (addressComponent != null){
+            regeocode.setCitycode(addressComponent.getString("citycode"));
+        }
+
+        return regeocode;
     }
 }

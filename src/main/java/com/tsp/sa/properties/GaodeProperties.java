@@ -15,4 +15,6 @@ public class GaodeProperties {
 
     private String directionTransitPrivatekey;
 
+    private String geocodeRegeoUrl;
+
 }

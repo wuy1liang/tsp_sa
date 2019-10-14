@@ -2,6 +2,8 @@ package com.tsp.sa.service;
 
 import com.tsp.sa.entity.GaodeTransitDirectionRequestParameters;
 import com.tsp.sa.entity.GaodeTransitDirectionResponseData;
+import com.tsp.sa.entity.GeocodeRegeoRequestParameters;
+import com.tsp.sa.entity.GeocodeRegeoResponseData;
 import com.tsp.sa.properties.GaodeProperties;
 import com.tsp.sa.utils.HttpUtil;
 import com.tsp.sa.utils.JsonUtil;
@@ -18,6 +20,37 @@ public class GaodeService {
     @Autowired
     GaodeProperties gaodeProperties;
 
+    /**
+     *  高德地址编码接口
+     * @param parameters
+     * @return
+     */
+    public GeocodeRegeoResponseData getGeocode(GeocodeRegeoRequestParameters parameters){
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("key",gaodeProperties.getDirectionTransitKey());
+        map.put("location",parameters.getLocation());
+        map.put("batch",true);
+
+        String sig = getGaodeSign(map,gaodeProperties.getDirectionTransitPrivatekey());
+
+        String url = gaodeProperties.getGeocodeRegeoUrl() + "key=" + gaodeProperties.getDirectionTransitKey() + "&"
+                + "location=" + parameters.getLocation() + "&"
+                + "batch=true&"
+                + "sig=" + sig;
+
+        String rest = HttpUtil.rest(map,url,HttpMethod.GET);
+
+        GeocodeRegeoResponseData data = JsonUtil.json2RegeoData(rest);
+
+        return data;
+    }
+
+    /**
+     *  高德路线规划接口
+     * @param parameters
+     * @return
+     */
     public GaodeTransitDirectionResponseData getDistance(GaodeTransitDirectionRequestParameters parameters){
 
         Map<String,Object> map = new HashMap<>();
@@ -30,9 +63,7 @@ public class GaodeService {
 
         String sig = getGaodeSign(map,gaodeProperties.getDirectionTransitPrivatekey());
 
-        String requestUrl = gaodeProperties.getDirectionTransitUrl();
-
-        requestUrl = requestUrl + "key=" + gaodeProperties.getDirectionTransitKey() + "&"
+        String requestUrl = gaodeProperties.getDirectionTransitUrl() + "key=" + gaodeProperties.getDirectionTransitKey() + "&"
                 + "origin=" + parameters.getOrigin() + "&"
                 + "destination=" + parameters.getDestination() + "&"
                 + "city=" + parameters.getCity() + "&"
@@ -40,9 +71,9 @@ public class GaodeService {
                 + "strategy=" + parameters.getStrategy() + "&"
                 + "sig=" + sig;
 
-        String rest = HttpUtil.rest(null, requestUrl, HttpMethod.GET);
+        String rest = HttpUtil.rest(map, requestUrl, HttpMethod.GET);
 
-        return JsonUtil.json2Data(rest);
+        return JsonUtil.json2TransitDirectionData(rest);
     }
 
     private String getGaodeSign(Map<String,Object> paramMap,String privateKey) {
@@ -64,9 +95,7 @@ public class GaodeService {
         }
         String param = sb.substring(0, sb.length() - 1);
         param = param + privateKey;
-        System.out.println(param);
         String sign = getMD5(param);
-        System.out.println(sign);
         return sign;
     }
 

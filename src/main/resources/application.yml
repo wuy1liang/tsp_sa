@@ -1,4 +1,17 @@
+# 高德api配置
 gaode:
   direction_transit_url: "https://restapi.amap.com/v3/direction/transit/integrated?"
+  geocode_regeo_url: "https://restapi.amap.com/v3/geocode/regeo?"
   direction_transit_key: "a52b22a186c5a4d2b3fb0ff0cbc26ae4"
   direction_transit_privatekey: "824d4a179ba5c4bf30ecea829ad82122"
+
+# 模拟退火算法参数
+sa:
+  # 初始温度
+  T: 50000
+  # 温度下限
+  T_min: 1e-8
+  # 退火系数
+  r: 0.98
+  # 每个温度的迭代次数
+  L: 100

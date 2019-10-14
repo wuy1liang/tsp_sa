@@ -1,6 +1,8 @@
 package com.tsp.sa.service;
 
-import com.tsp.sa.entity.City;
+import com.tsp.sa.entity.*;
+import com.tsp.sa.properties.SaProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,50 +10,45 @@ import java.util.List;
 @Service
 public class SaService {
 
-    /** 初始温度 */
-    private Double T = 50000.0;
+    @Autowired
+    GaodeService gaodeService;
 
-    /** 温度下限 */
-    private Double T_min = 1e-8;
-
-    /** 退火系数 */
-    private Double r = 0.98;
-
-    /** 每个温度的迭代次数 */
-    private Integer L = 100;
+    @Autowired
+    SaProperties saProperties;
 
     /** 城市 第一个城市为起点 */
     private List<City> cityList = new ArrayList<>();
 
     /** 各点到其他点的距离 */
-    private double[][] distance = {{0,1,3,2,2.5},{1,0,2,1,2},{3,2,0,1,1.5},{2,1,1,0,1.5},{2.5,2,1.5,1.5,0}};
+    private double[][] distance;
 
+    /** 各点之间的路线信息 */
+    private Route[][] routes;
 
-    public void sa(){
+    /** 退火次数 */
+    private Integer countS;
+
+    /** 迭代次数 */
+    private Integer couuntL;
+
+    public void sa(String origin, List<String> destinations, String strategy){
+
+        init(origin,destinations,strategy);
+
         List<City> result = new ArrayList<>();
         List<City> cop = new ArrayList<>();
-
-        City city1 = new City(0,0.0,0.0);
-        City city2 = new City(1,5.0,6.0);
-        City city3 = new City(2,12.0,13.0);
-        City city4 = new City(3,1.5,23.3);
-        City city5 = new City(4,14.4,7.8);
-        cityList.add(city1);
-        cityList.add(city2);
-        cityList.add(city3);
-        cityList.add(city4);
-        cityList.add(city5);
-        cityList.add(city1);
         cop.addAll(cityList);
         result.addAll(cityList);
 
-        Double t = T;
-        Double dis = 0.0;
-        int count = 0;
-        while (t >= T_min){
+        Double t = saProperties.getT();
+        Double t_min = saProperties.getT_min();
+        Integer L = saProperties.getL();
+        Double r = saProperties.getR();
+        countS = 0;
+        couuntL = 0;
 
+        while (t >= t_min){
             for (int i =0;i<L;i++){
-
                 cop = randomCity(cop);
                 double d1 = getDistance(result);
                 double d2 = getDistance(cop);
@@ -59,23 +56,19 @@ public class SaService {
                 if (de <= 0){
                     result.clear();
                     result.addAll(cop);
-                    dis = d2;
                 }else {
                     if (Math.exp(-de/t)>Math.random()){
                         result.clear();
                         result.addAll(cop);
-                        dis = d2;
                     }
                 }
-
+                couuntL++;
             }
             t *= r;
-            count++;
+            countS++;
         }
 
         System.out.println(result);
-        System.out.println(dis);
-        System.out.println(count);
     }
 
     private double getDistance(List<City> result) {
@@ -107,22 +100,49 @@ public class SaService {
             City destination = new City(i+1,destinations.get(i));
             cityList.add(destination);
         }
-        City end = new City(cityList.size(),origin);
+        City end = new City(0,origin);
         cityList.add(end);
 
         /**
-         *  distance 初始化
+         *  distance routes初始化
          */
         distance = new double[cityList.size()-1][cityList.size()-1];
+        routes = new Route[cityList.size()-1][cityList.size()-1];
         for (int i = 0;i < cityList.size()-1; i++){
             for (int j = 0;j < cityList.size()-1; j++){
                 if (i != j){
-                    
+                    try {
+                        GaodeTransitDirectionResponseData data = queryGaode(cityList.get(i),cityList.get(j),strategy);
+                        String duration = data.getRoute().getTransits().get(0).getDuration();
+                        distance[i][j] = Double.valueOf(duration);
+                        routes[i][j] = data.getRoute();
+                    }catch (Exception e){
+                        distance[i][j] = Double.MAX_VALUE;
+                    }
                 }else {
                     distance[i][j] = 0;
                 }
             }
         }
+    }
+
+    private GaodeTransitDirectionResponseData queryGaode(City city1, City city2, String strategy) {
+
+        GaodeTransitDirectionRequestParameters parameters = new GaodeTransitDirectionRequestParameters();
+
+        parameters.setOrigin(city1.getLocation());
+        parameters.setDestination(city2.getLocation());
+        parameters.setStrategy(strategy);
+
+        GeocodeRegeoRequestParameters regeoRequestParameters = new GeocodeRegeoRequestParameters();
+        regeoRequestParameters.setLocation(city1.getLocation()+"|"+city2.getLocation());
+        GeocodeRegeoResponseData geocode = gaodeService.getGeocode(regeoRequestParameters);
+
+        parameters.setCity(geocode.getRegeocodes().get(0).getCitycode());
+        parameters.setCityd(geocode.getRegeocodes().get(1).getCitycode());
+
+        GaodeTransitDirectionResponseData distance = gaodeService.getDistance(parameters);
+        return distance;
     }
 
 }

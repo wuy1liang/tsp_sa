@@ -1,5 +1,11 @@
 package com.tsp.sa;
 
+import com.tsp.sa.entity.GaodeTransitDirectionRequestParameters;
+import com.tsp.sa.entity.GaodeTransitDirectionResponseData;
+import com.tsp.sa.entity.GeocodeRegeoRequestParameters;
+import com.tsp.sa.entity.GeocodeRegeoResponseData;
+import com.tsp.sa.properties.SaProperties;
+import com.tsp.sa.service.GaodeService;
 import com.tsp.sa.service.SaService;
 import com.tsp.sa.utils.HttpUtil;
 import com.tsp.sa.utils.JsonUtil;
@@ -27,9 +33,46 @@ public class SaApplicationTests {
     @Autowired
     SaService saService;
 
+    @Autowired
+    GaodeService gaodeService;
+
+    @Autowired
+    SaProperties saProperties;
+
     @Test
     public void contextLoads() {
-        saService.sa();
+        String start = "116.703426,23.365613";  // 汕头
+        List<String> po = new ArrayList<>();
+        po.add("126.534967,45.803775");   // 哈尔滨
+        po.add("112.484848,23.052101");    // 肇庆
+        po.add("113.884020,22.555259");    // 深圳
+        po.add("104.066541,30.572269");    // 成都
+        saService.sa(start,po,"0");
+    }
+
+    @Test
+    public void t4(){
+        GaodeTransitDirectionRequestParameters parameters = new GaodeTransitDirectionRequestParameters();
+        parameters.setOrigin("113.884020,22.555259");
+        parameters.setDestination("104.066541,30.572269");
+        parameters.setCity("0755");
+        parameters.setCityd("028");
+        parameters.setStrategy("0");
+        GaodeTransitDirectionResponseData distance = gaodeService.getDistance(parameters);
+        System.out.println(distance);
+    }
+
+    @Test
+    public void t3(){
+        System.out.println(saProperties.getT_min()*1000000000);
+    }
+
+    @Test
+    public void t2(){
+        GeocodeRegeoRequestParameters parameters = new GeocodeRegeoRequestParameters();
+        parameters.setLocation("116.481488,39.990464|96.481488,39.990464");
+        GeocodeRegeoResponseData geocode = gaodeService.getGeocode(parameters);
+        System.out.println(geocode);
     }
 
     @Test
@@ -49,7 +92,7 @@ public class SaApplicationTests {
 
         System.out.println(url);
         String rest = HttpUtil.rest(params, url, HttpMethod.GET);
-        System.out.println(JsonUtil.json2Data(rest));
+        System.out.println(JsonUtil.json2TransitDirectionData(rest));
     }
 
     public String getGaodeSign(Map<String,Object> paramMap,String privateKey) {
