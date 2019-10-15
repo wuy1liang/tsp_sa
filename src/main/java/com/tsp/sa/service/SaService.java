@@ -69,6 +69,8 @@ public class SaService {
         }
 
         System.out.println(result);
+        System.out.println("退火次数："+countS);
+        System.out.println("迭代次数："+couuntL);
     }
 
     private double getDistance(List<City> result) {
@@ -94,13 +96,19 @@ public class SaService {
          *  cityList 初始化
          */
         cityList.clear();
-        City start = new City(0,origin);
+        GeocodeRegeoRequestParameters regeoRequestParameters = new GeocodeRegeoRequestParameters();
+        regeoRequestParameters.setLocation(origin);
+        GeocodeRegeoResponseData startCode = gaodeService.getGeocode(regeoRequestParameters);
+        City start = new City(0,origin,startCode.getRegeocodes().get(0).getFormatted_address(),startCode.getRegeocodes().get(0).getCitycode());
+
         cityList.add(start);
         for (int i = 0;i < destinations.size();i++){
-            City destination = new City(i+1,destinations.get(i));
+            regeoRequestParameters.setLocation(destinations.get(i));
+            GeocodeRegeoResponseData geocode = gaodeService.getGeocode(regeoRequestParameters);
+            City destination = new City(i+1,destinations.get(i),geocode.getRegeocodes().get(0).getFormatted_address(),geocode.getRegeocodes().get(0).getCitycode());
             cityList.add(destination);
         }
-        City end = new City(0,origin);
+        City end = new City(0,origin,startCode.getRegeocodes().get(0).getFormatted_address(),startCode.getRegeocodes().get(0).getCitycode());
         cityList.add(end);
 
         /**
@@ -112,7 +120,7 @@ public class SaService {
             for (int j = 0;j < cityList.size()-1; j++){
                 if (i != j){
                     try {
-                        GaodeTransitDirectionResponseData data = queryGaode(cityList.get(i),cityList.get(j),strategy);
+                        GaodeTransitDirectionResponseData data = queryGaode(i,j,strategy);
                         String duration = data.getRoute().getTransits().get(0).getDuration();
                         distance[i][j] = Double.valueOf(duration);
                         routes[i][j] = data.getRoute();
@@ -126,7 +134,10 @@ public class SaService {
         }
     }
 
-    private GaodeTransitDirectionResponseData queryGaode(City city1, City city2, String strategy) {
+    private GaodeTransitDirectionResponseData queryGaode(Integer i, Integer j, String strategy) {
+
+        City city1 = cityList.get(i);
+        City city2 = cityList.get(j);
 
         GaodeTransitDirectionRequestParameters parameters = new GaodeTransitDirectionRequestParameters();
 
@@ -134,12 +145,8 @@ public class SaService {
         parameters.setDestination(city2.getLocation());
         parameters.setStrategy(strategy);
 
-        GeocodeRegeoRequestParameters regeoRequestParameters = new GeocodeRegeoRequestParameters();
-        regeoRequestParameters.setLocation(city1.getLocation()+"|"+city2.getLocation());
-        GeocodeRegeoResponseData geocode = gaodeService.getGeocode(regeoRequestParameters);
-
-        parameters.setCity(geocode.getRegeocodes().get(0).getCitycode());
-        parameters.setCityd(geocode.getRegeocodes().get(1).getCitycode());
+        parameters.setCity(city1.getCitycode());
+        parameters.setCityd(city2.getCitycode());
 
         GaodeTransitDirectionResponseData distance = gaodeService.getDistance(parameters);
         return distance;
