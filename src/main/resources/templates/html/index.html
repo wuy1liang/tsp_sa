@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>模拟退火路线规划</title>
+    <link rel="stylesheet" href="../css/index.css"/>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=456c1cfa51dcc6ea4450f63777ab5d16&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.MouseTool"></script>
+</head>
+<body>
+<div id="container"></div>
+<div id="myPageTop">
+    <table>
+        <tr>
+            <td>
+                <label>搜索：</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="tipinput"/>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    window.onload = function() {
+        map.plugin(["AMap.ToolBar"], function() {
+            map.addControl(new AMap.ToolBar());
+        });
+        if(location.href.indexOf('&guide=1')!==-1){
+            map.setStatus({scrollWheel:false})
+        }
+    }
+    //地图加载
+    var map = new AMap.Map("container", {
+        resizeEnable: true
+    });
+    //输入提示
+    var autoOptions = {
+        input: "tipinput"
+    };
+    var auto = new AMap.Autocomplete(autoOptions);
+    var placeSearch = new AMap.PlaceSearch({
+        map: map
+    });  //构造地点查询类
+    AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+    function select(e) {
+        placeSearch.setCity(e.poi.adcode);
+        placeSearch.search(e.poi.name);  //关键字查询查询
+    }
+
+
+    //创建右键菜单
+    var menu = new ContextMenu(map);
+
+    //自定义菜单类
+    function ContextMenu(map) {
+
+        var me = this;
+        //地图中添加鼠标工具MouseTool插件
+        this.mouseTool = new AMap.MouseTool(map);
+
+        this.contextMenuPositon = null;
+
+        var content = [];
+
+        content.push("<div class='info context_menu'>");
+
+        content.push("  <p onclick='menu.test()'>测试</p>");
+        content.push("</div>");
+        //通过content自定义右键菜单内容
+        this.contextMenu = new AMap.ContextMenu({isCustom: true, content: content.join('')});
+
+        //地图绑定鼠标右击事件——弹出右键菜单
+        map.on('rightclick', function (e) {
+            me.contextMenu.open(map, e.lnglat);
+            me.contextMenuPositon = e.lnglat; //右键菜单位置
+        });
+
+    }
+
+    map.on('rightclick', function(e) {
+        /**
+         *  鼠标经纬度
+         */
+        console.log( e.lnglat.getLng() + ',' + e.lnglat.getLat())
+
+    });
+
+    ContextMenu.prototype.test = function test() {//右键菜单缩放地图
+        console.log("右键")
+        this.contextMenu.close();
+    };
+
+</script>
+</body>
+</html>
