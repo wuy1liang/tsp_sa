@@ -25,6 +25,10 @@
     </table>
 </div>
 <script type="text/javascript">
+
+    let lng,lat;
+    let hasStart = false;
+
     window.onload = function() {
         map.plugin(["AMap.ToolBar"], function() {
             map.addControl(new AMap.ToolBar());
@@ -68,13 +72,19 @@
 
         content.push("<div class='info context_menu'>");
 
-        content.push("  <p onclick='menu.test()'>测试</p>");
+        content.push("  <p  onclick='menu.addstart()'>添加起点</p>");
+        content.push("  <p onclick='menu.addEnd()'>添加终点</p>");
         content.push("</div>");
         //通过content自定义右键菜单内容
         this.contextMenu = new AMap.ContextMenu({isCustom: true, content: content.join('')});
 
         //地图绑定鼠标右击事件——弹出右键菜单
         map.on('rightclick', function (e) {
+            if (hasStart){
+                me.contextMenu.setContent("<p onclick='menu.addEnd()'>添加终点</p>");
+            }else {
+                me.contextMenu.b.setContent(content.join(''));
+            }
             me.contextMenu.open(map, e.lnglat);
             me.contextMenuPositon = e.lnglat; //右键菜单位置
         });
@@ -86,14 +96,42 @@
          *  鼠标经纬度
          */
         console.log( e.lnglat.getLng() + ',' + e.lnglat.getLat())
+        lng = e.lnglat.getLng()
+        lat = e.lnglat.getLat()
 
     });
 
-    ContextMenu.prototype.test = function test() {//右键菜单缩放地图
+    ContextMenu.prototype.addstart = function test() {//右键菜单缩放地图
         console.log("右键")
+
+        // 创建一个 Marker 实例：
+        var marker = new AMap.Marker({
+            position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            title: '起点'
+        });
+
+// 将创建的点标记添加到已有的地图实例：
+        map.add(marker);
+
+        hasStart = true;
+
         this.contextMenu.close();
     };
 
+    ContextMenu.prototype.addEnd = function test() {//右键菜单缩放地图
+        console.log("右键")
+
+        // 创建一个 Marker 实例：
+        var marker = new AMap.Marker({
+            position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            title: '终点'
+        });
+
+// 将创建的点标记添加到已有的地图实例：
+        map.add(marker);
+
+        this.contextMenu.close();
+    };
 </script>
 </body>
 </html>
