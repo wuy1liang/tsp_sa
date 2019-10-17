@@ -7,6 +7,7 @@
     <title>模拟退火路线规划</title>
     <link rel="stylesheet" href="../css/index.css"/>
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=456c1cfa51dcc6ea4450f63777ab5d16&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.MouseTool"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 <body>
 <div id="container"></div>
@@ -80,11 +81,6 @@
 
         //地图绑定鼠标右击事件——弹出右键菜单
         map.on('rightclick', function (e) {
-            if (hasStart){
-                me.contextMenu.setContent("<p onclick='menu.addEnd()'>添加终点</p>");
-            }else {
-                me.contextMenu.b.setContent(content.join(''));
-            }
             me.contextMenu.open(map, e.lnglat);
             me.contextMenuPositon = e.lnglat; //右键菜单位置
         });
@@ -102,32 +98,38 @@
     });
 
     ContextMenu.prototype.addstart = function test() {//右键菜单缩放地图
-        console.log("右键")
 
         // 创建一个 Marker 实例：
         var marker = new AMap.Marker({
-            position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            position: new AMap.LngLat(lng, lat),   // 经纬度对象
             title: '起点'
         });
 
-// 将创建的点标记添加到已有的地图实例：
+        // 将创建的点标记添加到已有的地图实例：
         map.add(marker);
-
         hasStart = true;
 
         this.contextMenu.close();
     };
 
     ContextMenu.prototype.addEnd = function test() {//右键菜单缩放地图
-        console.log("右键")
 
-        // 创建一个 Marker 实例：
+        // 点标记显示内容，HTML要素字符串
+        var markerContent = '' +
+            '<div class="custom-content-marker">' +
+            '   <img src="../img/dir-via-marker.png">' +
+            '   <div class="close-btn" onclick="clearMarker()">X</div>' +
+            '</div>';
+
         var marker = new AMap.Marker({
-            position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-            title: '终点'
+            position: new AMap.LngLat(lng, lat),
+            // 将 html 传给 content
+            content: markerContent,
+            // 以 icon 的 [center bottom] 为原点
+            offset: new AMap.Pixel(-13, -30)
         });
 
-// 将创建的点标记添加到已有的地图实例：
+        // 将 markers 添加到地图
         map.add(marker);
 
         this.contextMenu.close();
