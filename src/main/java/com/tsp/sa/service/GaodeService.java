@@ -76,9 +76,15 @@ public class GaodeService {
         return JsonUtil.json2TransitDirectionData(rest);
     }
 
+    /**
+     *  计算高德秘钥
+     * @param paramMap
+     * @param privateKey
+     * @return
+     */
     private String getGaodeSign(Map<String,Object> paramMap,String privateKey) {
         Iterator<Map.Entry<String, Object>> it = paramMap.entrySet().iterator();
-        List<String> paramKeyList = new ArrayList<String>();
+        List<String> paramKeyList = new ArrayList<>();
         while(it.hasNext()) {
             Map.Entry<String, Object> entry = it.next();
             paramKeyList.add(entry.getKey());
@@ -99,7 +105,11 @@ public class GaodeService {
         return sign;
     }
 
-    //生成MD5
+    /**
+     *  生成MD5
+     * @param message
+     * @return
+     */
     private String getMD5(String message) {
         String md5 = "";
         try {
@@ -112,7 +122,12 @@ public class GaodeService {
         }
         return md5;
     }
-    // 二进制转十六进制
+
+    /**
+     *  二进制转十六进制
+     * @param bytes
+     * @return
+     */
     private static String bytesToHex(byte[] bytes) {
         StringBuffer hexStr = new StringBuffer();
         int num;
