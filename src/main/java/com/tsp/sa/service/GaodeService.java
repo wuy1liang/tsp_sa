@@ -77,7 +77,7 @@ public class GaodeService {
     }
 
     /**
-     *  计算高德秘钥
+     *  计算高德数字签名
      * @param paramMap
      * @param privateKey
      * @return
@@ -93,10 +93,10 @@ public class GaodeService {
         paramKeyList.toArray(array);
         Arrays.sort(array);
         StringBuffer sb = new StringBuffer();
-        for(int i = 0;i < array.length;i++) {
-            sb.append(array[i]);
+        for (String anArray : array) {
+            sb.append(anArray);
             sb.append("=");
-            sb.append(paramMap.get(array[i]));
+            sb.append(paramMap.get(anArray));
             sb.append("&");
         }
         String param = sb.substring(0, sb.length() - 1);
@@ -131,12 +131,12 @@ public class GaodeService {
     private static String bytesToHex(byte[] bytes) {
         StringBuffer hexStr = new StringBuffer();
         int num;
-        for (int i = 0; i < bytes.length; i++) {
-            num = bytes[i];
-            if(num < 0) {
+        for (byte aByte : bytes) {
+            num = aByte;
+            if (num < 0) {
                 num += 256;
             }
-            if(num < 16){
+            if (num < 16) {
                 hexStr.append("0");
             }
             hexStr.append(Integer.toHexString(num));
